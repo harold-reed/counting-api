@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "counting-api-executor",
+    "name": "counting-api",
+    "region": "us-east-1"
+  },
+  "api": {
+    "id": "xovz10gxz6",
+    "module": "api"
+  }
+}

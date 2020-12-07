@@ -1,0 +1,54 @@
+const AWS = require('aws-sdk')
+const docClient = new AWS.DynamoDB.DocumentClient()
+//const rp = require('minimal-require-promise')
+
+function updateCounter(siteId){
+    if (!siteId)
+        throw new Error('site required to update count')
+
+    return docClient.update({
+        TableName: 'resume-counters',
+        Key: {
+            siteId: siteId
+        },
+//        UpdateExpression: 'set site = :s, ADD 1 count=:c',
+//        UpdateExpression: 'set count = count + :val',
+        UpdateExpression: 'set count = :c + :val',
+        ExpressionAttributeValues: {
+            ":val": 1
+//            ":val": 1,
+//            ':s': options.site,
+//            ':c': options.count
+        },
+        ReturnValues: 'UPDATED_NEW'
+    }).catch((updateError) => {
+          console.log(`Oppos, order is not updated: (`, updateError)
+          throw updateError
+      })
+    
+}
+
+//var userCount = 123;
+
+//function getCounter(resumeCounter) {
+//    if (!resumeCounter)
+//      return userCount
+//}
+
+function getCounter(siteId) {
+    if (typeof siteId === 'undefined')
+      return docClient.scan({
+        TableName: 'resume-counters'
+      }).promise()
+        .then(result => result.Items)
+  
+    return docClient.get({
+      TableName: 'resume-counters',
+      Key: {
+        siteId: siteId
+      }
+    }).promise()
+      .then(result => result.Item)
+  }
+  
+module.exports = getCounter, updateCounter
